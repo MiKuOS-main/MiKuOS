@@ -6,9 +6,6 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
 Page {
-    width: parent.width
-    height: parent.height
-
     ColumnLayout {
         width: parent.width
         spacing: Kirigami.Units.smallSpacing

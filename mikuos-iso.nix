@@ -53,7 +53,7 @@ let
     [Desktop Entry]
     Name=Install MiKuOS
     Comment=Install MiKuOS on this computer
-    Exec=calamares
+    Exec=sh -c "pkexec calamares"
     Icon=mikuos
     Terminal=false
     Categories=System;

@@ -1,0 +1,3 @@
+#!/nix/store/1sr8rmx4v0v994lkbzhwc1f0qr1gxxs9-bash-5.3p9/bin/bash
+exec pw-play /home/luca/.local/share/sounds/miku/bell.wav
+

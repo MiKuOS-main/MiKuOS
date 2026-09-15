@@ -1,0 +1,27 @@
+[general]
+bars = 22
+framerate = 30
+sensitivity = 100
+autosens = 1
+
+[input]
+method = pipewire
+source = auto
+
+[output]
+method = ncurses
+channels = stereo
+mono_opt = 1
+
+[smoothing]
+noise_reduction = 0.6
+integral = 30
+gravity = 130
+
+[color]
+gradient = 1
+gradient_count = 4
+gradient_color_1 = '#39C5BB'
+gradient_color_2 = '#5B8DFF'
+gradient_color_3 = '#C58AFF'
+gradient_color_4 = '#FF7D9C'

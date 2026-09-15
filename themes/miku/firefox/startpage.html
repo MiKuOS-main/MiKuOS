@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>miku-39</title>
+<style>
+  :root { --teal:#39c5bb; --blue:#5b8dff; --purple:#c58aff; --pink:#ff7d9c; --ink:#dcebff; --dim:#7588ad; --bg:#0b1226; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body {
+    background:#0b1226 url("file:///home/luca/Pictures/Wallpapers/Miku/miku-cosmic-night.jpg") center/cover no-repeat fixed;
+    color:var(--ink);
+    font-family:"JetBrains Mono","Fira Code","Cascadia Mono",monospace;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card {
+    text-align:center; padding:3rem 4rem; border-radius:18px;
+    background:rgba(11,18,38,.82); backdrop-filter:blur(6px);
+    border:1px solid rgba(57,197,187,.35); box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .miku { font-size:2.6rem; font-weight:700; color:var(--teal); text-shadow:0 0 24px rgba(57,197,187,.4); }
+  .clock { margin:.6rem 0 1.2rem; font-size:1.05rem; color:var(--dim); letter-spacing:.12em; }
+  form { display:flex; gap:.5rem; margin-top:.4rem; }
+  input[type=text] {
+    flex:1; min-width:20rem; padding:.7rem 1rem; border-radius:10px;
+    background:rgba(220,235,255,.07); color:var(--ink);
+    border:1px solid rgba(91,141,255,.5); outline:none; font-size:.95rem; font-family:inherit;
+  }
+  input[type=text]:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(57,197,187,.15); }
+  button {
+    padding:.7rem 1.4rem; border:0; border-radius:10px; cursor:pointer; font-family:inherit; font-weight:700;
+    background:linear-gradient(135deg,var(--teal),var(--blue)); color:#081022;
+  }
+  button:hover { filter:brightness(1.1); }
+  .links { margin-top:1.6rem; display:flex; gap:1.4rem; justify-content:center; }
+  .links a { color:var(--dim); text-decoration:none; transition:.2s; }
+  .links a:hover { color:var(--purple); text-shadow:0 0 12px rgba(197,138,255,.5); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="miku">こんにちは、ミクです！</div>
+    <div class="clock" id="clock"></div>
+    <form action="https://duckduckgo.com/" method="get">
+      <input type="text" name="q" placeholder="39(サンキュー)! 検索してね">
+      <button type="submit">→</button>
+    </form>
+    <div class="links">
+      <a href="https://www.youtube.com/results?search_query=hatsune+miku">Miku ✿ Music</a>
+      <a href="https://vocadb.net/">VocaDB</a>
+      <a href="https://piapro.net/">piapro</a>
+      <a href="https://app.voca.rocks/">VocaRocks</a>
+    </div>
+  </div>
+  <script>
+    const pad = n => String(n).padStart(2,"0");
+    const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ` +
+                     `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    document.getElementById("clock").textContent = fmt(new Date());
+    setInterval(() => document.getElementById("clock").textContent = fmt(new Date()), 1000);
+  </script>
+</body>
+</html>

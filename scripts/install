@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -e
+
+CONFIG="/etc/nixos/configuration.nix"
+
+if [ $# -eq 0 ]; then
+    echo "Usage: install [--flatpak] package1 package2 ..."
+    exit 1
+fi
+
+FLATPAK=false
+PKGS=()
+
+for arg in "$@"; do
+    if [ "$arg" = "--flatpak" ]; then
+        FLATPAK=true
+    else
+        PKGS+=("$arg")
+    fi
+done
+
+if [ ${#PKGS[@]} -eq 0 ]; then
+    echo "Error: no packages specified"
+    exit 1
+fi
+
+if $FLATPAK; then
+    for pkg in "${PKGS[@]}"; do
+        echo "==> Installing $pkg via Flatpak..."
+        flatpak install --user -y "$pkg"
+    done
+    echo
+    echo "Done!"
+else
+    echo "==> Checking packages..."
+
+    TMP=$(mktemp)
+
+    sudo cp "$CONFIG" "$TMP"
+    sudo chown "$USER" "$TMP"
+
+    for pkg in "${PKGS[@]}"; do
+        if grep -Eq "[[:space:]]+${pkg}[[:space:]]*$" "$TMP"; then
+            echo "/ $pkg already installed"
+        else
+            echo "+ Adding $pkg"
+            sed -i "s/^\(  environment.systemPackages = with pkgs; \[\)/\1\n    $pkg/" "$TMP"
+        fi
+    done
+
+    echo
+    echo "==> Applying configuration..."
+
+    sudo cp "$TMP" "$CONFIG"
+    rm "$TMP"
+
+    sudo nixos-rebuild switch
+
+    echo
+    echo "Done!"
+fi

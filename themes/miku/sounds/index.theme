@@ -1,0 +1,19 @@
+[Sound Theme]
+Name=Miku
+Comment=Hatsune Miku system sound effects
+Directories=bell,dialog-information,dialog-warning,dialog-error,message-new-instant
+
+[bell]
+filename=bell.wav
+
+[dialog-information]
+filename=dialog-information.wav
+
+[dialog-warning]
+filename=dialog-warning.wav
+
+[dialog-error]
+filename=dialog-error.wav
+
+[message-new-instant]
+filename=message-new-instant.wav

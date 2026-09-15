@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Play Hatsune Miku chime whenever the session unlocks.
+dbus-monitor --session "type='signal',interface='org.freedesktop.login1.Session',member='Unlock'" |
+  while read -r line; do
+    case "$line" in
+      *"member=Unlock"*)
+        pw-play /home/luca/.local/share/sounds/miku-unlock.wav 2>/dev/null
+        ;;
+    esac
+  done

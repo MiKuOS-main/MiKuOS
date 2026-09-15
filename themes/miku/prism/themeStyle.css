@@ -1,0 +1,23 @@
+QListWidget {
+  background-color: #0B1226;
+  background-image: url(/home/luca/.local/share/PrismLauncher/themes/Miku/background.png);
+  background-repeat: no-repeat;
+  background-position: top center;
+  border: none;
+}
+
+QListWidget::item {
+  background: transparent;
+  color: #E8F1FF;
+  padding: 4px 8px;
+}
+
+QListWidget::item:hover:!selected {
+  background-color: rgba(57, 197, 187, 0.18);
+}
+
+QListWidget::item:selected {
+  background-color: #39C5BB;
+  color: #0B1226;
+  border-radius: 4px;
+}

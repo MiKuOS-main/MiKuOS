@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=♪ Miku Visualizer
+Comment=cava audio visualizer with the Miku palette
+Exec=/etc/nixos/scripts/miku-visualizer
+Icon=com.system76.CosmicPlayer
+Terminal=false
+Categories=AudioVideo;Audio;
+StartupNotify=true

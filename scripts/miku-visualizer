@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Launch the Miku cava visualizer (floating, borderless, transparent).
+exec kitty \
+  --class=MikuVisualizer \
+  --title="♪ Miku Visualizer ♪" \
+  -o hide_window_decorations=yes \
+  -o background_opacity=0.0 \
+  -o foreground=#39C5BB \
+  cava

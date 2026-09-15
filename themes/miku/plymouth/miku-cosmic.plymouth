@@ -1,0 +1,28 @@
+[Plymouth Theme]
+Name=Miku-Cosmic
+Description=Hatsune Miku Cosmic Splash (NixOS edition)
+ModuleName=two-step
+
+[two-step]
+ImageDir=@THEME_DIR@
+
+# Layout
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.42
+HorizontalAlignment=.5
+VerticalAlignment=.845
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.36
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.382
+
+Transition=none
+TransitionDuration=0.0
+
+# Cosmic palette
+BackgroundStartColor=0x0a0f1f
+BackgroundEndColor=0x04060c
+ProgressBarForegroundColor=0x39c5bb
+ProgressBarBackgroundColor=0x1c2a45
+MessageBelowAnimation=true
+ScaleBackgroundImage=true

@@ -1,0 +1,29 @@
+{
+  "colors": {
+    "AlternateBase": "#131C36",
+    "Base": "#0B1226",
+    "BrightText": "#FF7D9C",
+    "Button": "#1B2A4D",
+    "ButtonText": "#E8F1FF",
+    "Highlight": "#39C5BB",
+    "HighlightedText": "#0B1226",
+    "Link": "#7DF0C8",
+    "Text": "#E8F1FF",
+    "ToolTipBase": "#0A1020",
+    "ToolTipText": "#E8F1FF",
+    "Window": "#101A33",
+    "WindowText": "#E8F1FF",
+    "fadeAmount": 0.5,
+    "fadeColor": "#0B1226"
+  },
+  "logColors": {
+    "Launcher": "#39C5BB",
+    "Error": "#FF7D9C",
+    "Warning": "#C58AFF",
+    "Debug": "#7DF0C8",
+    "FatalHighlight": "#FF7D9C",
+    "Fatal": "#0B1226"
+  },
+  "name": "Miku",
+  "widgets": "Fusion"
+}

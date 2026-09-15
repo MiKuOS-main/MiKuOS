@@ -1,0 +1,43 @@
+# Hatsune Miku — Cosmic
+# Background art: fan artist (via Wallhaven), accent: Miku teal
+title-text: "Hatsune Miku"
+desktop-image: "background.jpg"
+terminal-border: "0"
+terminal-font: "Unifont Regular 32"
+
++ boot_menu {
+    item_font = "Unifont Regular 32"
+    left = 360
+    top = 44%
+    width = 760
+    height = 100%
+    item_color = "#c3d4f2"
+    selected_item_color = "#8ffdff"
+    icon_width = 72
+    icon_height = 72
+    item_icon_space = 26
+    item_height = 84
+    item_padding = 8
+    item_spacing = 46
+    selected_item_pixmap_style = "select_*.png"
+}
+
++ label {
+    left = 50%
+    top = 20%
+    align = "center"
+    font = "Unifont Regular 48"
+    text = "H a t s u n e   M i k u"
+    color = "#39c5bb"
+}
+
++ label {
+    left = 360
+    top = 84%
+    width = 760
+    align = "center"
+    id = "__timeout__"
+    font = "Unifont Regular 32"
+    text = "Selected OS will start automatically in %d seconds"
+    color = "#bfd0f2"
+}

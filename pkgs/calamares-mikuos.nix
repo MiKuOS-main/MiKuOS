@@ -80,7 +80,26 @@ let
       "--add-flag --xdg-config"
     ];
   };
+
+  # MiKuOS logo (the Miku avatar) installed as a proper XDG app icon so the
+  # installer launchers and the dock/taskbar show it instead of the generic
+  # Calamares icon.
+  icons = pkgs.runCommand "mikuos-app-icons" { } ''
+    mkdir -p $out/share/icons/hicolor/{48x48,64x64,128x128,256x256}/apps
+    for s in 48x48 64x64 128x128 256x256; do
+      cp ${mikuAvatar} $out/share/icons/hicolor/$s/apps/mikuos.png
+    done
+  '';
+
+  # Patched copy of the Calamares desktop entry so any launcher and the
+  # autostart item present the MiKuOS logo and name.
+  desktop = pkgs.runCommand "calamares-mikuos-desktop" { } ''
+    mkdir -p $out/share/applications
+    sed 's/^Icon=calamares$/Icon=mikuos/' \
+      '${calamares}/share/applications/calamares.desktop' \
+      > $out/share/applications/calamares.desktop
+  '';
 in
 {
-  inherit extensions calamares;
+  inherit extensions calamares icons desktop;
 }

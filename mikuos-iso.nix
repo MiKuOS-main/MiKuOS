@@ -9,7 +9,7 @@ let
   calamaresMikuOS = pkgs.callPackage /etc/nixos/pkgs/calamares-mikuos.nix { };
   calamaresAutostart = pkgs.makeAutostartItem {
     name = "calamares";
-    package = calamaresMikuOS.calamares;
+    package = calamaresMikuOS.desktop;
   };
 
   # ── Live desktop provisioning (COSMIC) for user "nixos" ──
@@ -51,7 +51,7 @@ let
     Name=Install MiKuOS
     Comment=Install MiKuOS on this computer
     Exec=calamares
-    Icon=system-software-install
+    Icon=mikuos
     Terminal=false
     Categories=System;
     Type=Application
@@ -140,7 +140,7 @@ in
       user = "nixos";
       group = "users";
       mode = "0644";
-      argument = "${calamaresMikuOS.calamares}/share/applications/calamares.desktop";
+      argument = "${calamaresMikuOS.desktop}/share/applications/calamares.desktop";
     };
     "${homeDir}/Desktop/firefox.desktop".C = {
       user = "nixos";
@@ -238,6 +238,7 @@ in
   environment.defaultPackages = with pkgs; [
     calamaresMikuOS.calamares
     calamaresMikuOS.extensions
+    calamaresMikuOS.icons
     calamaresAutostart
     glibcLocales
     kitty

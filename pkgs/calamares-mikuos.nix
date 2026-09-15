@@ -15,7 +15,7 @@ let
   overlayDir = ../calamares;
   walls = ../themes/miku/wallpapers;
 
-  mikuAvatar = walls + "/miku-avatar.png";
+  mikuLogo = ../themes/miku/miku-logo.png;
   mikuNight = walls + "/miku-cosmic-night.jpg";
   mikuSpace = walls + "/miku-space.jpg";
   mikuStarfield = walls + "/miku-starfield.jpg";
@@ -52,7 +52,7 @@ let
       mkdir -p $out/share/calamares/branding/mikuos
       cp -r ${overlayDir}/branding/mikuos/* $out/share/calamares/branding/mikuos/
       chmod -R u+w $out/share/calamares/branding/mikuos
-      cp ${mikuAvatar} $out/share/calamares/branding/mikuos/logo.png
+      cp ${mikuLogo} $out/share/calamares/branding/mikuos/logo.png
       cp ${mikuNight} $out/share/calamares/branding/mikuos/miku-cosmic-night.jpg
       cp ${mikuSpace} $out/share/calamares/branding/mikuos/miku-space.jpg
       cp ${mikuStarfield} $out/share/calamares/branding/mikuos/miku-starfield.jpg
@@ -87,7 +87,7 @@ let
   icons = pkgs.runCommand "mikuos-app-icons" { } ''
     mkdir -p $out/share/icons/hicolor/{48x48,64x64,128x128,256x256}/apps
     for s in 48x48 64x64 128x128 256x256; do
-      cp ${mikuAvatar} $out/share/icons/hicolor/$s/apps/mikuos.png
+      cp ${mikuLogo} $out/share/icons/hicolor/$s/apps/mikuos.png
     done
   '';
 

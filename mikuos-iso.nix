@@ -13,19 +13,22 @@ let
   };
 
   # ── Live desktop provisioning (COSMIC) for user "nixos" ──
+  # Format mirrors what cosmic-bg 1.2 ships in its default config:
+  #   * `backgrounds` is a list of enum variants, i.e. `[All]` (not strings)
+  #   * `all` uses `source: Path(...)` for a single image
   desktopBg = pkgs.writeText "cosmic-desktop-all.ron" ''
     (
-        filter_by_theme: false,
-        filter_method: Lanczos,
         output: "all",
-        rotation_frequency: 600,
-        sampling_method: Alphanumeric,
+        source: Path("${mikuWallpapers}/share/backgrounds/miku/3516132-ultrawide.jpg"),
+        filter_by_theme: true,
+        rotation_frequency: 3600,
+        filter_method: Lanczos,
         scaling_mode: Zoom,
-        source: File("${mikuWallpapers}/share/backgrounds/miku/default.jpg"),
+        sampling_method: Alphanumeric,
     )
   '';
   desktopBgSame = pkgs.writeText "cosmic-desktop-same-on-all" "true";
-  desktopBgList = pkgs.writeText "cosmic-desktop-backgrounds" "[ \"all\" ]";
+  desktopBgList = pkgs.writeText "cosmic-desktop-backgrounds" "[All]";
   mikuAccent = pkgs.writeText "miku-accent.ron" ''
     Some((
         red: 0.2235,
@@ -160,6 +163,56 @@ in
       mode = "0755";
     };
     "${homeDir}/.config/cosmic".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicAppList".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicAppList/v1".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicBackground".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicBackground/v1".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Dark".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Dark/v1".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Dark.Builder".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Dark.Builder/v1".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Light.Builder".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Light.Builder/v1".d = {
       user = "nixos";
       group = "users";
       mode = "0755";

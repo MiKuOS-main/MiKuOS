@@ -6,6 +6,11 @@ let
   mikuWallpapers = pkgs.callPackage /etc/nixos/pkgs/miku-wallpapers.nix { };
   mikuGrubTheme = pkgs.callPackage /etc/nixos/pkgs/hatsune-miku-grub.nix { };
   mikuPlymouth = pkgs.callPackage /etc/nixos/pkgs/miku-cosmic-plymouth.nix { };
+  calamaresMikuOS = pkgs.callPackage /etc/nixos/pkgs/calamares-mikuos.nix { };
+  calamaresAutostart = pkgs.makeAutostartItem {
+    name = "calamares";
+    package = calamaresMikuOS.calamares;
+  };
 
   # ── Live desktop provisioning (COSMIC) for user "nixos" ──
   desktopBg = pkgs.writeText "cosmic-desktop-all.ron" ''
@@ -16,7 +21,7 @@ let
         rotation_frequency: 600,
         sampling_method: Alphanumeric,
         scaling_mode: Zoom,
-        source: Directory("${mikuWallpapers}/share/backgrounds/miku"),
+        source: File("${mikuWallpapers}/share/backgrounds/miku/default.jpg"),
     )
   '';
   desktopBgSame = pkgs.writeText "cosmic-desktop-same-on-all" "true";
@@ -44,7 +49,7 @@ let
   installLauncher = pkgs.writeText "install-mikuos.desktop" ''
     [Desktop Entry]
     Name=Install MiKuOS
-    Comment=Graphical NixOS installer
+    Comment=Install MiKuOS on this computer
     Exec=calamares
     Icon=system-software-install
     Terminal=false
@@ -135,7 +140,7 @@ in
       user = "nixos";
       group = "users";
       mode = "0644";
-      argument = "${pkgs.calamares-nixos}/share/applications/calamares.desktop";
+      argument = "${calamaresMikuOS.calamares}/share/applications/calamares.desktop";
     };
     "${homeDir}/Desktop/firefox.desktop".C = {
       user = "nixos";
@@ -148,12 +153,6 @@ in
       group = "users";
       mode = "0644";
       argument = "${pkgs.gparted}/share/applications/gparted.desktop";
-    };
-    "${homeDir}/Desktop/nixos-manual.desktop".C = {
-      user = "nixos";
-      group = "users";
-      mode = "0644";
-      argument = "/run/current-system/sw/share/applications/nixos-manual.desktop";
     };
     "${homeDir}/.config".d = {
       user = "nixos";
@@ -237,7 +236,10 @@ in
   # ── Live toolset (a real distro live media) ─────────────
   environment.pathsToLink = [ "/share/calamares" ];
   environment.defaultPackages = with pkgs; [
-    calamares-nixos
+    calamaresMikuOS.calamares
+    calamaresMikuOS.extensions
+    calamaresAutostart
+    glibcLocales
     kitty
     btop
     htop
@@ -266,6 +268,12 @@ in
   services.dbus.enable = true;
   services.udisks2.enable = true;
   services.openssh.enable = true;
+
+  # Required for the Calamares partition module (kpmcore).
+  programs.partition-manager.enable = true;
+
+  # Allow choosing any locale during install.
+  i18n.supportedLocales = [ "all" ];
 
   nixpkgs.config.allowUnfree = true;
 

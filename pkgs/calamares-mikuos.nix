@@ -142,6 +142,7 @@ let
         -e 's|^TryExec=.*$|TryExec=${launcher}/bin/mikuos-installer|' \
       '${calamares}/share/applications/calamares.desktop' \
       > $out/share/applications/calamares.desktop
+    chmod 0755 $out/share/applications/calamares.desktop
   '';
 in
 {

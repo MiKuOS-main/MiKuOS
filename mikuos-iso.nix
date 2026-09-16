@@ -136,13 +136,13 @@ in
     "${homeDir}/Desktop/install-mikuos.desktop".C = {
       user = "nixos";
       group = "users";
-      mode = "0644";
+      mode = "0755";
       argument = "${installLauncher}";
     };
     "${homeDir}/Desktop/calamares.desktop".C = {
       user = "nixos";
       group = "users";
-      mode = "0644";
+      mode = "0755";
       argument = "${calamaresMikuOS.desktop}/share/applications/calamares.desktop";
     };
     "${homeDir}/Desktop/firefox.desktop".C = {

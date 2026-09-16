@@ -294,7 +294,6 @@ in
     calamaresMikuOS.icons
     calamaresMikuOS.launcher
     calamaresAutostart
-    xhost
     glibcLocales
     kitty
     btop

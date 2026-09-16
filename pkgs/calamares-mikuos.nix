@@ -92,14 +92,14 @@ let
   # Launcher that elevates Calamares to root while keeping it on the live
   # session's display.
   #
-  # Why this is needed: pkexec sanitizes the environment, and even if it did
-  # not, libwayland refuses clients whose euid does not own XDG_RUNTIME_DIR,
-  # so a root process cannot talk to the user's Wayland compositor. Qt then
-  # falls back to the xcb backend against $DISPLAY and dies with "could not
-  # connect to display" because the root process holds no X cookie. Solution:
-  # run the Qt installer on the session's Xwayland display, authorize root via
-  # xhost +SI:localuser:root (server-interpreted auth, no cookie needed), keep
-  # XAUTHORITY as a fallback, and force the xcb backend.
+  # Why this is needed: a root Qt process cannot reach the user's Wayland
+  # compositor (libwayland refuses clients whose euid does not own
+  # XDG_RUNTIME_DIR) and, with a sanitized environment, falls back to xcb on
+  # $DISPLAY with no X authority. pkexec is also unusable on the live image
+  # (its store binary is not setuid), while the wheel live user has
+  # passwordless sudo. So: pin Qt to the xcb backend on the session's
+  # Xwayland display (explicitly, plus XAUTHORITY carried over by -E) and
+  # escalate via the setuid sudo wrapper.
   launcher = pkgs.writeShellScriptBin "mikuos-installer" ''
     DISPLAY="''${DISPLAY:-}"
     if [ -z "$DISPLAY" ]; then
@@ -109,16 +109,15 @@ let
         break
       done
     fi
-    export DISPLAY
 
-    if [ -n "$DISPLAY" ] && [ -x "${lib.getExe' pkgs.xhost "xhost"}" ]; then
-      "${lib.getExe' pkgs.xhost "xhost"}" +SI:localuser:root >/dev/null 2>&1 || true
+    if [ -x /run/wrappers/bin/sudo ]; then
+      SUDO=/run/wrappers/bin/sudo
+    else
+      SUDO="${lib.getExe' pkgs.sudo "sudo"}"
     fi
 
-    exec "${lib.getExe' pkgs.polkit "pkexec"}" "${lib.getExe' pkgs.coreutils "env"}" \
+    exec "$SUDO" -E \
       DISPLAY="$DISPLAY" \
-      XAUTHORITY="''${XAUTHORITY:-''${HOME}/.Xauthority}" \
-      XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/0}" \
       QT_QPA_PLATFORM=xcb \
       HOME=/root \
       ${calamares}/bin/calamares "$@"

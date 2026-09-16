@@ -9,9 +9,9 @@
 let
   assets = ./mikuos;  # wallpapers/ and logo.png copied in by the installer
 
-  mikuWallpapers = pkgs.runCommand "miku-wallpapers" { } ''
+  mikuWallpapers = pkgs.runCommand "miku-wallpapers" { src = assets; } ''
     mkdir -p $out/share/backgrounds/miku
-    cp ${toString assets}/wallpapers/* $out/share/backgrounds/miku/
+    cp $src/wallpapers/* $out/share/backgrounds/miku/
     ln -sf $out/share/backgrounds/miku/3516132-ultrawide.jpg \
       $out/share/backgrounds/miku/default.jpg
   '';

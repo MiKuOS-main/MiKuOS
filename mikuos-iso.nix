@@ -53,7 +53,7 @@ let
     [Desktop Entry]
     Name=Install MiKuOS
     Comment=Install MiKuOS on this computer
-    Exec=sh -c "pkexec calamares"
+    Exec=${calamaresMikuOS.launcher}/bin/mikuos-installer
     Icon=mikuos
     Terminal=false
     Categories=System;
@@ -292,7 +292,9 @@ in
     calamaresMikuOS.calamares
     calamaresMikuOS.extensions
     calamaresMikuOS.icons
+    calamaresMikuOS.launcher
     calamaresAutostart
+    xhost
     glibcLocales
     kitty
     btop

@@ -94,13 +94,18 @@ let
   #
   # Why this is needed: a root Qt process cannot reach the user's Wayland
   # compositor (libwayland refuses clients whose euid does not own
-  # XDG_RUNTIME_DIR) and, with a sanitized environment, falls back to xcb on
-  # $DISPLAY with no X authority. pkexec is also unusable on the live image
-  # (its store binary is not setuid), while the wheel live user has
-  # passwordless sudo. So: pin Qt to the xcb backend on the session's
-  # Xwayland display (explicitly, plus XAUTHORITY carried over by -E) and
-  # escalate via the setuid sudo wrapper.
+  # XDG_RUNTIME_DIR and pkexec/sanitized environments drop the graphical
+  # variables), so it must run on the session's Xwayland display. Launched
+  # from the desktop UI the environment is stripped: no DISPLAY, and no
+  # XAUTHORITY cookie root can use. So grant the root process access
+  # server-side with xhost (no cookie needed), also pass XAUTHORITY as a
+  # fallback, pin Qt to xcb, escalate via the setuid sudo wrapper, and keep a
+  # log we can inspect after clicking a launcher.
   launcher = pkgs.writeShellScriptBin "mikuos-installer" ''
+    LOG=/tmp/mikuos-installer.log
+    exec 2>>"$LOG"
+    printf '%s\n' "=== mikuos-installer $(date -u +%FT%TZ)" >>"$LOG"
+
     DISPLAY="''${DISPLAY:-}"
     if [ -z "$DISPLAY" ]; then
       for sock in /tmp/.X11-unix/X*; do
@@ -109,6 +114,15 @@ let
         break
       done
     fi
+    printf '%s\n' "DISPLAY=$DISPLAY XAUTHORITY=''${XAUTHORITY:-}" >>"$LOG"
+
+    if [ -n "$DISPLAY" ]; then
+      for i in 1 2 3 4 5 6 7 8 9 10; do
+        "${lib.getExe' pkgs.xhost "xhost"}" +SI:localuser:root \
+          >/dev/null 2>&1 && break
+        sleep 0.3
+      done || true
+    fi
 
     if [ -x /run/wrappers/bin/sudo ]; then
       SUDO=/run/wrappers/bin/sudo
@@ -116,8 +130,10 @@ let
       SUDO="${lib.getExe' pkgs.sudo "sudo"}"
     fi
 
+    printf '%s\n' "exec $SUDO -E calamares on $DISPLAY" >>"$LOG"
     exec "$SUDO" -E \
       DISPLAY="$DISPLAY" \
+      XAUTHORITY="''${XAUTHORITY:-''${HOME}/.Xauthority}" \
       QT_QPA_PLATFORM=xcb \
       HOME=/root \
       ${calamares}/bin/calamares "$@"

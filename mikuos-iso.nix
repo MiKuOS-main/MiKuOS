@@ -292,8 +292,10 @@ in
     calamaresMikuOS.calamares
     calamaresMikuOS.extensions
     calamaresMikuOS.icons
+    calamaresMikuOS.desktop
     calamaresMikuOS.launcher
     calamaresAutostart
+    xhost
     glibcLocales
     kitty
     btop

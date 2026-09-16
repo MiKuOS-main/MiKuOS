@@ -60,6 +60,14 @@ let
       cp ${src}/branding/nixos/images/nodesktop.jpg \
         $out/share/calamares/branding/mikuos/images/nodesktop.jpg
 
+      # Installed-system identity: the nixos module copies these into the
+      # target's /etc/nixos and imports ./mikuos.nix.
+      mkdir -p $out/share/calamares/mikuos-assets/wallpapers
+      cp ${walls}/*.jpg $out/share/calamares/mikuos-assets/wallpapers/
+      cp ${mikuLogo} $out/share/calamares/mikuos-assets/logo.png
+      cp ${overlayDir}/mikuos-installed/mikuos.nix \
+        $out/share/calamares/mikuos-assets/mikuos.nix
+
       # settings.conf: expand the out path, switch branding, prompt before install.
       substituteInPlace $out/etc/calamares/settings.conf --replace-fail @out@ $out
       substituteInPlace $out/etc/calamares/settings.conf \

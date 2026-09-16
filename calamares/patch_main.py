@@ -23,6 +23,37 @@ content = content.replace(marker_cfg, cfgcosmic + "\n" + marker_cfg, 1)
 dispatch = '''    elif gs.value("packagechooser_packagechooser") == "cosmic":
         cfg += cfgcosmic
 '''
+
+# Ship a MiKuOS identity module with the generated configuration so the
+# installed system is branded MiKuOS, not stock NixOS.
+marker_cfghead = "      ./hardware-configuration.nix\n    ];\n"
+assert content.count(marker_cfghead) == 1, "!cfghead imports marker not unique"
+content = content.replace(
+    marker_cfghead,
+    "      ./hardware-configuration.nix\n      ./mikuos.nix\n    ];\n",
+    1,
+)
+
+write_mikuos = '''    # Write the MiKuOS identity module and its artwork into the target.
+    mikuos_assets = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), "..", "..", "..", "..",
+        "share", "calamares", "mikuos-assets",
+    ))
+    mikuos_dir = os.path.join(root_mount_point, "etc", "nixos", "mikuos")
+    if not os.path.exists(mikuos_dir):
+        os.makedirs(mikuos_dir)
+    subprocess.check_output(
+        ["cp", "-r", os.path.join(mikuos_assets, "."), mikuos_dir + "/"]
+    )
+    os.rename(
+        os.path.join(mikuos_dir, "mikuos.nix"),
+        os.path.join(root_mount_point, "etc", "nixos", "mikuos.nix"),
+    )
+
+'''
+marker_write = "    # Write the configuration.nix file"
+assert content.count(marker_write) == 1, "!config-write marker not unique"
+content = content.replace(marker_write, write_mikuos + marker_write, 1)
 marker_disp = '    if (\n        gs.value("keyboardLayout")'
 assert content.count(marker_disp) == 1, "!dispatch marker not unique"
 content = content.replace(marker_disp, dispatch + marker_disp, 1)

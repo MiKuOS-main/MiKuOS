@@ -36,6 +36,7 @@ lock = RLock()
 proc = None
 viz = None
 stop_at = None
+missing_song_reported = False
 
 
 def log(msg):
@@ -44,13 +45,7 @@ def log(msg):
 
 
 def player():
-    for p in (
-        "/home/luca/.nix-profile/bin/mpv",
-        "/run/current-system/sw/bin/mpv",
-    ):
-        if os.path.exists(p):
-            return p
-    return shutil.which("mpv") or "mpv"
+    return shutil.which("mpv") or "/run/current-system/sw/bin/mpv"
 
 
 def visualizer_start():
@@ -85,9 +80,16 @@ def visualizer_stop():
 
 
 def set_playing(running):
-    global proc
+    global proc, missing_song_reported
     with lock:
         if running and (proc is None or proc.poll() is not None):
+            if not os.path.isfile(SONG):
+                # Without the track mpv exits immediately, so the timer below
+                # would respawn it once a second forever. Say so once and idle.
+                if not missing_song_reported:
+                    missing_song_reported = True
+                    log(f"song not found, not playing: {SONG}")
+                return
             try:
                 proc = subprocess.Popen(
                     [player(), "--no-video", "--loop=inf", "--really-quiet", "--volume=90", SONG],

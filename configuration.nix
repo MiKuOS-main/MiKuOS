@@ -8,9 +8,7 @@ let
 
   mikuWallpapers = pkgs.callPackage ./pkgs/miku-wallpapers.nix { };
 
-  mikuBell = pkgs.writeShellScript "miku-bell" ''
-    exec pw-play /home/luca/.local/share/sounds/miku/bell.wav
-  '';
+  release = import ./release.nix;
 
   greeterBg = pkgs.writeText "cosmic-greeter-all.ron" ''
     (
@@ -139,13 +137,15 @@ in
   ];
 
   # ── MiKuOS identity ──────────────────────────────────────
+  # version/codename come from release.nix -- see the note there about
+  # why system.nixos.codeName cannot carry the nickname.
   system.nixos.distroName = "MiKuOS";
   system.nixos.distroId = "mikuos";
-  system.nixos.variantName = "MiKuOS Desktop";
+  system.nixos.variantName = "MiKuOS Desktop ${release.version} \"${release.codeName}\"";
   system.nixos.variant_id = "desktop";
   system.nixos.extraOSReleaseArgs = {
     HOME_URL = "https://mikuos.local/";
-    BUG_REPORT_URL = "https://github.com/mikuos/mikuos/issues";
+    BUG_REPORT_URL = "https://github.com/MiKuOS-main/MiKuOS/issues";
     DOCUMENTATION_URL = "https://mikuos.local/manual";
     SUPPORT_URL = "https://mikuos.local/support";
     ANSI_COLOR = "0;38;2;57;197;187";
@@ -553,7 +553,7 @@ in
   };
 
   environment.etc."nixos/scripts/miku-bell" = {
-    source = "${mikuBell}";
+    source = ./scripts/miku-bell;
     mode = "0755";
   };
 
@@ -591,7 +591,8 @@ in
 
   # ── Tailscale client (official Tailscale account) ───────
   services.tailscale.enable = true;
-  system.stateVersion = "26.05";
+  # Must track the nixpkgs base release, not the MiKuOS version.
+  system.stateVersion = release.nixosBaseRelease;
 
   # ── Home Manager ─────────────────────────────────────────
   home-manager.useGlobalPkgs = true;
@@ -616,7 +617,8 @@ in
     description = "Run daily git push at 23:00";
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "daily";
+      # "daily" fires at 00:00, not the 23:00 the description promises.
+      OnCalendar = "*-*-* 23:00:00";
       Persistent = true;
     };
   };

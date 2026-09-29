@@ -13,7 +13,9 @@ let
   src = upstream.src;
 
   overlayDir = ../calamares;
+  themes = ../themes/miku;
   walls = ../themes/miku/wallpapers;
+  release = import ../release.nix;
 
   mikuLogo = ../themes/miku/miku-logo.png;
   mikuNight = walls + "/miku-cosmic-night.jpg";
@@ -56,17 +58,34 @@ let
       cp ${mikuNight} $out/share/calamares/branding/mikuos/miku-cosmic-night.jpg
       cp ${mikuSpace} $out/share/calamares/branding/mikuos/miku-space.jpg
       cp ${mikuStarfield} $out/share/calamares/branding/mikuos/miku-starfield.jpg
+      mkdir -p $out/share/calamares/branding/mikuos/images
       cp ${mikuNight} $out/share/calamares/branding/mikuos/images/cosmic.jpg
       cp ${src}/branding/nixos/images/nodesktop.jpg \
         $out/share/calamares/branding/mikuos/images/nodesktop.jpg
 
-      # Installed-system identity: the nixos module copies these into the
-      # target's /etc/nixos and imports ./mikuos.nix.
+      # Installed-system identity + theming: the nixos module copies these into
+      # the target's /etc/nixos and imports ./mikuos.nix.
       mkdir -p $out/share/calamares/mikuos-assets/wallpapers
       cp ${walls}/*.jpg $out/share/calamares/mikuos-assets/wallpapers/
+      # The installed module builds the miku7 icon set from this avatar.
+      cp ${walls}/miku-avatar.png $out/share/calamares/mikuos-assets/wallpapers/
       cp ${mikuLogo} $out/share/calamares/mikuos-assets/logo.png
       cp ${overlayDir}/mikuos-installed/mikuos.nix \
         $out/share/calamares/mikuos-assets/mikuos.nix
+      # mikuos.nix imports ./release.nix for the version/codename, so it
+      # has to travel with it.
+      cp ${./../release.nix} $out/share/calamares/mikuos-assets/release.nix
+      # ... and it builds the Miku splash, icon set and login banner from
+      # these, so they travel with it too.
+      cp -r ${themes}/plymouth $out/share/calamares/mikuos-assets/plymouth
+      cp ${themes}/motd.txt $out/share/calamares/mikuos-assets/motd.txt
+      cp ${./miku7-icons.nix} $out/share/calamares/mikuos-assets/miku7-icons.nix
+
+      # Inject the release identity into the branding component. Calamares
+      # does not expand these, so the placeholders below are replaced here.
+      substituteInPlace $out/share/calamares/branding/mikuos/branding.desc \
+        --replace-fail @VERSION@ ${release.version} \
+        --replace-fail @CODENAME@ ${release.codeName}
 
       # settings.conf: expand the out path, switch branding, prompt before install.
       substituteInPlace $out/etc/calamares/settings.conf --replace-fail @out@ $out

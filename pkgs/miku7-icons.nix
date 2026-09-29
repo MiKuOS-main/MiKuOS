@@ -1,9 +1,8 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, avatar ? ../themes/miku/wallpapers/miku-avatar.png }:
 
 let
   sizes    = [ 16 22 24 32 48 64 128 256 ];
   sizeStr  = s: "${toString s}x${toString s}";
-  avatar   = /etc/nixos/themes/miku/wallpapers/miku-avatar.png;
   launcher = "com.system76.CosmicLauncher";
   appColors = [
     { name = "com.system76.CosmicFiles";     color = "#39C5BB"; }

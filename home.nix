@@ -3,12 +3,15 @@
 let
   # Python with pywayland for the empty-desktop music watcher
   mikuIdlePython = pkgs.python3.withPackages (ps: [ ps.pywayland ps.cffi ]);
+
+  release = import ./release.nix;
 in
 
 {
   home.username = "luca";
   home.homeDirectory = "/home/luca";
-  home.stateVersion = "26.05";
+  # Must track the nixpkgs base release, not the MiKuOS version.
+  home.stateVersion = release.nixosBaseRelease;
 
   # Miku cursor theme
   home.sessionVariables = {
@@ -414,9 +417,12 @@ in
   };
 
   # ── Firefox (Miku startpage + new-tab wallpaper) ────────
+  # Firefox keeps profiles in ~/.mozilla/firefox, never in ~/.config, and
+  # profiles.ini below selects the "Miku" profile -- so the profile files have
+  # to live under ~/.mozilla/firefox/Miku or Firefox silently ignores them.
   home.file.".config/firefox/startpage.html".source = ./themes/miku/firefox/startpage.html;
-  home.file.".config/mozilla/firefox/ykf3b0xp.default/wallpaper/miku-wallpaper.jpg".source = ./themes/miku/wallpapers/miku-cosmic-night.jpg;
-  home.file.".config/mozilla/firefox/ykf3b0xp.default/user.js".text = ''
+  home.file.".mozilla/firefox/Miku/wallpaper/miku-wallpaper.jpg".source = ./themes/miku/wallpapers/miku-cosmic-night.jpg;
+  home.file.".mozilla/firefox/Miku/user.js".text = ''
     user_pref("browser.startup.homepage", "file:///home/luca/.config/firefox/startpage.html");
     user_pref("browser.startup.page", 1);
     user_pref("browser.newtabpage.activity-stream.newtabWallpapers.enabled", true);
@@ -430,9 +436,9 @@ in
     user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
     user_pref("browser.tabs.tabMinWidth", 90);
   '';
-  home.file.".config/mozilla/firefox/ykf3b0xp.default/user.js".force = true;
-  home.file.".config/mozilla/firefox/ykf3b0xp.default/chrome/userChrome.css".source = ./themes/miku/firefox/userChrome.css;
-  home.file.".config/mozilla/firefox/ykf3b0xp.default/chrome/userChrome.css".force = true;
+  home.file.".mozilla/firefox/Miku/user.js".force = true;
+  home.file.".mozilla/firefox/Miku/chrome/userChrome.css".source = ./themes/miku/firefox/userChrome.css;
+  home.file.".mozilla/firefox/Miku/chrome/userChrome.css".force = true;
   home.file.".config/nvim/init.vim".source = ./themes/miku/nvim/init.vim;
   home.file.".config/nvim/colors/miku.vim".source = ./themes/miku/nvim/colors/miku.vim;
   home.file.".local/share/PrismLauncher/themes/Miku/theme.json".source = ./themes/miku/prism/theme.json;
@@ -442,13 +448,15 @@ in
   home.file.".local/share/sounds/miku-lock.wav".source = ./themes/miku/sounds/miku-lock.wav;
   home.file.".local/share/sounds/miku-launch.wav".source = ./themes/miku/sounds/miku-launch.wav;
   home.file.".local/share/sounds/miku-unlock.wav".source = ./themes/miku/sounds/miku-unlock.wav;
-  home.file.".local/share/sounds/miku/bell.wav".source = ./themes/miku/sounds/bell.wav;
-  home.file.".local/share/sounds/miku/dialog-information.wav".source = ./themes/miku/sounds/dialog-information.wav;
-  home.file.".local/share/sounds/miku/dialog-warning.wav".source = ./themes/miku/sounds/dialog-warning.wav;
-  home.file.".local/share/sounds/miku/dialog-error.wav".source = ./themes/miku/sounds/dialog-error.wav;
-  home.file.".local/share/sounds/miku/message-new-instant.wav".source = ./themes/miku/sounds/message-new-instant.wav;
+  # The freedesktop sound-theme spec treats each entry in index.theme's
+  # Directories= as a subdirectory, so the layout is sounds/miku/<event>/
+  # <event>.wav -- a flat sounds/miku/<event>.wav is never found by GTK.
+  home.file.".local/share/sounds/miku/bell/bell.wav".source = ./themes/miku/sounds/bell.wav;
+  home.file.".local/share/sounds/miku/dialog-information/dialog-information.wav".source = ./themes/miku/sounds/dialog-information.wav;
+  home.file.".local/share/sounds/miku/dialog-warning/dialog-warning.wav".source = ./themes/miku/sounds/dialog-warning.wav;
+  home.file.".local/share/sounds/miku/dialog-error/dialog-error.wav".source = ./themes/miku/sounds/dialog-error.wav;
+  home.file.".local/share/sounds/miku/message-new-instant/message-new-instant.wav".source = ./themes/miku/sounds/message-new-instant.wav;
 
-  # ── Firefox Miku profile (userChrome accents) ─────────────
   home.file.".mozilla/firefox/profiles.ini".text = ''
     [General]
     StartWithLastProfile=1
@@ -458,23 +466,6 @@ in
     IsRelative=1
     Path=Miku
     Default=1
-  '';
-  home.file.".mozilla/firefox/Miku/user.js".text = ''
-    user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-  '';
-  home.file.".mozilla/firefox/Miku/chrome/userChrome.css".text = ''
-    :root{
-      --toolbar-bgcolor: #0B1226 !important;
-      --toolbar-color: #E8F1FF !important;
-      --tab-line-color: #39C5BB !important;
-      --tab-selected-bgcolor: #101A33 !important;
-    }
-    #navigator-toolbox{ border-bottom: 1px solid #1B2A4D !important; }
-    #urlbar-background, #searchbar{ background: #101A33 !important; border: 1px solid #1B2A4D !important; }
-    #urlbar[focused=true] > #urlbar-background{ background: #0A1120 !important; border: 1px solid #39C5BB !important; }
-    .tab-background[selected="true"]{ outline: 1px solid #FF7D9C !important; }
-    .toolbarbutton-1:hover{ background-color: rgba(57,197,187,0.12) !important; }
-    toolbarbutton#panic-button{ fill: #FF7D9C !important; }
   '';
   home.file.".mozilla/firefox/Miku/chrome/userContent.css".text = ''
     @-moz-document url(about:newtab), url(about:home) {
@@ -488,20 +479,6 @@ in
     }
   '';
   home.file.".local/share/sounds/miku/index.theme".source = ./themes/miku/sounds/index.theme;
-
-  # Point GTK event sounds at the Miku theme (non-destructive patch)
-  home.activation.mikuSoundTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    for f in "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"; do
-      [ -f "$f" ] || continue
-      if grep -q '^gtk-sound-theme-name=' "$f"; then
-        sed -i 's/^gtk-sound-theme-name=.*/gtk-sound-theme-name=miku/' "$f"
-      else
-        printf '\ngtk-sound-theme-name=miku\n' >> "$f"
-      fi
-      grep -q '^gtk-enable-event-sounds=' "$f" || printf 'gtk-enable-event-sounds=1\n' >> "$f"
-      grep -q '^gtk-enable-input-feedback-sounds=' "$f" || printf 'gtk-enable-input-feedback-sounds=1\n' >> "$f"
-    done
-  '';
 
   # ── Miku login chime (plays once at desktop start) ──────
   systemd.user.services."miku-login-sound" = {

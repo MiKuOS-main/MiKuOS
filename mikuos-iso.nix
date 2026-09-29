@@ -1,16 +1,16 @@
 { config, lib, pkgs, ... }:
 
 let
-  themeDir = "/etc/nixos/themes/miku";
-
-  mikuWallpapers = pkgs.callPackage /etc/nixos/pkgs/miku-wallpapers.nix { };
-  mikuGrubTheme = pkgs.callPackage /etc/nixos/pkgs/hatsune-miku-grub.nix { };
-  mikuPlymouth = pkgs.callPackage /etc/nixos/pkgs/miku-cosmic-plymouth.nix { };
-  calamaresMikuOS = pkgs.callPackage /etc/nixos/pkgs/calamares-mikuos.nix { };
+  mikuWallpapers = pkgs.callPackage ./pkgs/miku-wallpapers.nix { };
+  mikuGrubTheme = pkgs.callPackage ./pkgs/hatsune-miku-grub.nix { };
+  mikuPlymouth = pkgs.callPackage ./pkgs/miku-cosmic-plymouth.nix { };
+  calamaresMikuOS = pkgs.callPackage ./pkgs/calamares-mikuos.nix { };
   calamaresAutostart = pkgs.makeAutostartItem {
     name = "calamares";
     package = calamaresMikuOS.desktop;
   };
+
+  release = import ./release.nix;
 
   # ── Live desktop provisioning (COSMIC) for user "nixos" ──
   # Format mirrors what cosmic-bg 1.2 ships in its default config:
@@ -72,11 +72,11 @@ in
   system.nixos.distroName = "MiKuOS";
   system.nixos.distroId = "mikuos";
   system.nixos.vendorName = "MiKuOS";
-  system.nixos.variantName = "MiKuOS Live";
+  system.nixos.variantName = "MiKuOS Live ${release.version} \"${release.codeName}\"";
   system.nixos.variant_id = "live";
   system.nixos.extraOSReleaseArgs = {
     HOME_URL = "https://mikuos.local/";
-    BUG_REPORT_URL = "https://github.com/mikuos/mikuos/issues";
+    BUG_REPORT_URL = "https://github.com/MiKuOS-main/MiKuOS/issues";
     DOCUMENTATION_URL = "https://mikuos.local/manual";
     SUPPORT_URL = "https://mikuos.local/support";
     ANSI_COLOR = "0;38;2;57;197;187";
@@ -84,17 +84,17 @@ in
 
   # ── ISO image metadata ──────────────────────────────────
   isoImage.edition = "mikuos";
-  isoImage.configurationName = "MiKuOS COSMIC Live";
+  isoImage.configurationName = "MiKuOS COSMIC Live ${release.version}";
   isoImage.volumeID = "MIKUOS";
   isoImage.grubTheme = mikuGrubTheme;
   isoImage.compressImage = true;
   image.baseName = lib.mkForce
-    "mikuos-${config.system.nixos.release}-${pkgs.stdenv.hostPlatform.system}";
+    "mikuos-${release.version}-${release.codeName}-${pkgs.stdenv.hostPlatform.system}";
   image.fileName = lib.mkForce "${config.image.baseName}.iso";
 
   # Miku-styled SYSLINUX (BIOS) boot menu
   isoImage.syslinuxTheme = ''
-    MENU TITLE ${config.system.nixos.distroName}
+    MENU TITLE ${config.system.nixos.distroName} ${release.version} (${release.codeName})
     MENU RESOLUTION 800 600
     MENU COLOR screen       37;40      #800b1226 #00000000 std
     MENU COLOR border       30;44      #8039c5bb #00000000 std
@@ -217,6 +217,18 @@ in
       group = "users";
       mode = "0755";
     };
+    # ".w" below does not create parent directories, so CosmicTheme.Mode
+    # has to be provisioned explicitly or the is_dark write is skipped.
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Mode".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
+    "${homeDir}/.config/cosmic/com.system76.CosmicTheme.Mode/v1".d = {
+      user = "nixos";
+      group = "users";
+      mode = "0755";
+    };
     "${homeDir}/.config/cosmic/com.system76.CosmicBackground/v1/all".C = {
       user = "nixos";
       group = "users";
@@ -268,7 +280,7 @@ in
   };
 
   # ── Miku login MOTD ─────────────────────────────────────
-  environment.etc.motd.source = "${themeDir}/motd.txt";
+  environment.etc.motd.source = ./themes/miku/motd.txt;
   environment.etc.motd.mode = "0644";
 
   # ── Locale / layout / timezone ──────────────────────────
@@ -334,5 +346,6 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
-  system.stateVersion = "26.05";
+  # Must track the nixpkgs base release, not the MiKuOS version.
+  system.stateVersion = release.nixosBaseRelease;
 }

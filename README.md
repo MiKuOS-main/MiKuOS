@@ -1,6 +1,24 @@
 # MiKuOS
 
+**Current release: 1.0.0 "Tetu"** (built on NixOS 26.05)
+
 MiKuOS is a **NixOS-based desktop** with a **COSMIC** desktop experience, a graphical installer (Calamares), and Miku-themed branding across boot, live session, and default theming. The repository includes the NixOS host configuration and a standalone ISO module to produce a bootable live/installer image.
+
+## Versioning
+
+The release number and codename are defined once, in [`release.nix`](release.nix), and consumed everywhere else:
+
+| Field | Value | Notes |
+| --- | --- | --- |
+| `version` | `1.0.0` | MiKuOS's own release number |
+| `codeName` | `Tetu` | Release nickname |
+| `nixosBaseRelease` | `26.05` | NixOS release this is built on; also used for `system.stateVersion` |
+
+MiKuOS's version is intentionally independent of the NixOS release it builds on, so the two can be read independently.
+
+The nickname is **not** set via `system.nixos.codeName`: that option is `readOnly` in nixpkgs and is pinned to upstream's own codename. MiKuOS carries its nickname in `system.nixos.variantName` (surfaced as `VARIANT` in `os-release`), the Calamares branding component, and the ISO filename instead.
+
+Bump the release by editing `release.nix`; do not hardcode the version anywhere else.
 
 ## What you get
 
@@ -19,24 +37,18 @@ MiKuOS is a **NixOS-based desktop** with a **COSMIC** desktop experience, a grap
 
 ## Download & reassemble
 
-The ISO is split into `< 2 GB` chunks because GitHub Releases caps individual assets at 2 GB. Download **all** parts from the Releases page, then reassemble:
+The ISO is split into `< 2 GB` chunks because GitHub Releases caps individual assets at 2 GB. Download **all** parts from the Releases page, then reassemble.
+
+Substitute the release you downloaded; for 1.0.0 "Tetu" the name is `mikuos-1.0.0-Tetu-x86_64-linux.iso`:
 
 ```bash
-cat mikuos-26.05-x86_64-linux.iso.part* > mikuos-26.05-x86_64-linux.iso
+cat mikuos-<version>-<codename>-x86_64-linux.iso.part* > mikuos-<version>-<codename>-x86_64-linux.iso
 ```
 
-Verify integrity:
+Verify integrity against the `sha256sum` published on the Releases page:
 
 ```bash
-sha256sum mikuos-26.05-x86_64-linux.iso
-```
-
-Checksums (26.05):
-
-```
-mikuos-26.05-x86_64-linux.iso          2ff9db6a0494b2ed0256d4d21404c2fb8c328a2a382a500f6de3bb7ca6053ea6
-mikuos-26.05-x86_64-linux.iso.part00   1e7a6bb71a7bf30f5f24e5797a2a26c66470c5909a5b950a8251f00225256a38
-mikuos-26.05-x86_64-linux.iso.part01   e77addbe003a7ea34e6a6ef2a4642fff6c4a4cd37c05921477370ae4ed02cbf9
+sha256sum mikuos-<version>-<codename>-x86_64-linux.iso
 ```
 
 ## Flash to a USB drive
@@ -44,7 +56,7 @@ mikuos-26.05-x86_64-linux.iso.part01   e77addbe003a7ea34e6a6ef2a4642fff6c4a4cd37
 Replace `/dev/sdX` with your USB device:
 
 ```bash
-sudo dd if=mikuos-26.05-x86_64-linux.iso of=/dev/sdX bs=4M status=progress conv=fsync
+sudo dd if=mikuos-<version>-<codename>-x86_64-linux.iso of=/dev/sdX bs=4M status=progress conv=fsync
 sync
 ```
 
@@ -61,6 +73,7 @@ You can also use a graphical tool like **USBImager**.
 
 Classic NixOS setup (no flakes required).
 
+- `release.nix` — single source of truth for the version, codename and NixOS base release
 - `configuration.nix` — host-level NixOS configuration (MiKuOS branding options)
 - `home.nix` — Home Manager configuration (theming, shell, terminal)
 - `mikuos-iso.nix` — standalone module used to build the MiKuOS live/installer ISO
@@ -87,7 +100,7 @@ setsid nix-build '<nixos/nixos>' \
   > /tmp/opencode/mikuos-iso-build.log 2>&1 & disown
 ```
 
-The uncompressed ISO is written to `iso/mikuos-26.05-x86_64-linux.iso` inside the build output (or store) path.
+The uncompressed ISO is written to `iso/mikuos-<version>-<codename>-x86_64-linux.iso` inside the build output (or store) path — e.g. `iso/mikuos-1.0.0-Tetu-x86_64-linux.iso` for the current release.
 
 ## Notes
 

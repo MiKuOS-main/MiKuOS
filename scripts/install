@@ -45,7 +45,19 @@ else
             echo "/ $pkg already installed"
         else
             echo "+ Adding $pkg"
-            sed -i "s/^\(  environment.systemPackages = with pkgs; \[\)/\1\n    $pkg/" "$TMP"
+            # A failed match exits 0 with an unchanged file, which used to
+            # print "+ Adding" and silently do nothing, so check the result.
+            if ! sed -i "s/^\(  environment.systemPackages = with pkgs; \[\)/\1\n    $pkg/" "$TMP"; then
+                echo "Error: could not edit $CONFIG" >&2
+                rm -f "$TMP"
+                exit 1
+            fi
+            if ! grep -Eq "[[:space:]]+${pkg}[[:space:]]*$" "$TMP"; then
+                echo "Error: could not find 'environment.systemPackages = with pkgs; [' in $CONFIG" >&2
+                echo "       edit the file by hand and re-run." >&2
+                rm -f "$TMP"
+                exit 1
+            fi
         fi
     done
 

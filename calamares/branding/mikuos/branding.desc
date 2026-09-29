@@ -27,14 +27,14 @@ navigation: widget
 strings:
     productName:         "${PRETTY_NAME}"
     shortProductName:    MiKuOS
-    version:
-    shortVersion:
+    version:             @VERSION@
+    shortVersion:        @VERSION@
     versionedName:       "${PRETTY_NAME}"
-    shortVersionedName:  MiKuOS
-    bootloaderEntryName: MiKuOS
+    shortVersionedName:  MiKuOS @VERSION@ (@CODENAME@)
+    bootloaderEntryName: MiKuOS @VERSION@ (@CODENAME@)
     productUrl:          https://mikuos.local/
     supportUrl:          https://mikuos.local/support
-    knownIssuesUrl:      https://github.com/mikuos/mikuos/issues
+    knownIssuesUrl:      https://github.com/MiKuOS-main/MiKuOS/issues
     releaseNotesUrl:     https://mikuos.local/manual
 
 images:
